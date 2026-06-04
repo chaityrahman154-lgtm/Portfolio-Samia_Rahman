@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Samia Rahman — ML & AI</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='15' y='30' width='70' height='52' rx='7' fill='%233a7d6e'/%3E%3Crect x='36' y='18' width='28' height='16' rx='4' fill='none' stroke='%233a7d6e' stroke-width='6'/%3E%3Crect x='10' y='44' width='80' height='22' rx='3' fill='%232a6a5e'/%3E%3Crect x='43' y='49' width='14' height='12' rx='2' fill='%23fdf7f2'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=IBM+Plex+Mono:wght@300;400;500&family=Libre+Baskerville:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #2c2320;
+      --paper: #fdf7f2;
+      --cream: #f5ede4;
+      --blush: #f9e4e8;
+      --sky: #e4eff9;
+      --teal: #3a7d6e;
+      --teal-light: #52a896;
+      --rose: #c0556a;
+      --muted: #8a7570;
+      --border: rgba(44,35,32,0.10);
+      --border-strong: rgba(44,35,32,0.22);
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Libre Baskerville', Georgia, serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* CURSOR */
+    .cursor {
+      position: fixed; top: 0; left: 0; z-index: 9999;
+      width: 9px; height: 9px;
+      background: var(--teal);
+      border-radius: 50%;
+      pointer-events: none;
+      mix-blend-mode: multiply;
+      transition: transform 0.18s ease, background 0.2s;
+    }
+    .cursor.hover { transform: scale(4.5); background: var(--rose); }
+
+    /* GRAIN */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 997;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none; opacity: 0.6;
+    }
+
+    /* ── MASTHEAD ── */
+    .masthead {
+      border-bottom: 2px solid var(--ink);
+      padding: 0 3.5rem;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: stretch;
+      min-height: 52px;
+    }
+    .masthead-side {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9.5px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--muted); display: flex; align-items: center;
+    }
+    .masthead-side.right { justify-content: flex-end; }
+    .masthead-center {
+      font-family: 'Playfair Display', serif;
+      font-size: 10.5px; letter-spacing: 3.5px; text-transform: uppercase;
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 2rem;
+    }
+
+    /* ── NAV ── */
+    nav {
+      border-bottom: 1px solid var(--border);
+      display: flex; justify-content: center;
+    }
+    nav a {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10.5px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--ink); text-decoration: none;
+      padding: 13px 22px;
+      border-right: 1px solid var(--border);
+      transition: background 0.18s, color 0.18s;
+    }
+    nav a:first-child { border-left: 1px solid var(--border); }
+    nav a:hover { background: var(--ink); color: var(--paper); }
+
+    /* ── HERO ── */
+    .hero {
+      display: grid;
+      grid-template-columns: 0.85fr 1px 1.5fr 1px 0.65fr;
+      border-bottom: 2px solid var(--ink);
+      min-height: 86vh;
+    }
+    .col-divider { background: var(--ink); }
+    .hero-col { padding: 2.8rem; }
+
+    /* Left */
+    .hero-left { display: flex; flex-direction: column; justify-content: space-between; }
+    .hero-vol {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--teal); border-top: 3px solid var(--teal); padding-top: 10px;
+    }
+    .hero-name {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3.2rem, 6.5vw, 6rem);
+      font-weight: 900; line-height: 0.9; letter-spacing: -3px;
+    }
+    .hero-name em { font-style: italic; color: var(--teal); }
+    .hero-meta {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px; line-height: 2; color: var(--muted); letter-spacing: 1px;
+      border-top: 1px solid var(--border); padding-top: 1rem;
+    }
+
+    /* Center */
+    .hero-center { display: flex; flex-direction: column; }
+    .hero-headline {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.4rem, 2.8vw, 2.4rem);
+      font-weight: 700; line-height: 1.2; letter-spacing: -0.4px;
+      border-top: 3px solid var(--ink); padding-top: 1.2rem;
+      margin-bottom: 1.6rem;
+    }
+    .hero-headline em { font-style: italic; color: var(--rose); }
+    .hero-intro {
+      font-size: 14.5px; line-height: 1.9; color: #3e302c;
+      flex: 1;
+    }
+    .hero-intro p + p { margin-top: 0.9rem; text-indent: 1.4rem; }
+    .hero-photo {
+      margin-top: 2rem;
+      border: 1px solid var(--border);
+      background: var(--cream);
+      overflow: hidden; position: relative;
+      min-height: 260px;
+    }
+    .hero-photo img {
+      width: 100%; height: 100%; object-fit: cover; object-position: center top;
+      filter: sepia(10%) contrast(1.05);
+      display: block;
+    }
+    .hero-photo-cap {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: rgba(44,35,32,0.72);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8.5px; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--paper); padding: 6px 10px;
+    }
+
+    /* Hero fill block */
+    .hero-fill {
+      margin-top: 2.2rem;
+      border-top: 1px solid var(--border);
+      padding-top: 1.8rem;
+      display: flex; flex-direction: column; gap: 1.6rem;
+    }
+    .hero-fill-quote {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem; font-style: italic;
+      line-height: 1.55; color: var(--muted);
+      padding-left: 1rem;
+      border-left: 3px solid var(--blush);
+    }
+    .fill-mark {
+      font-size: 2rem; line-height: 0; vertical-align: -0.4rem;
+      color: var(--rose); margin-right: 2px; font-style: normal;
+    }
+    .hero-fill-stats {
+      display: flex; align-items: center; gap: 0;
+      background: var(--cream);
+      border: 1px solid var(--border);
+      padding: 1.2rem 1.4rem;
+    }
+    .fill-stat {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    }
+    .fill-stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; font-weight: 900; color: var(--teal); letter-spacing: -1px;
+    }
+    .fill-stat-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--muted); text-align: center;
+    }
+    .fill-stat-div {
+      width: 1px; height: 36px; background: var(--border); flex-shrink: 0;
+    }
+    .hero-fill-tags {
+      display: flex; flex-wrap: wrap; gap: 6px;
+    }
+    .ftag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8.5px; letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: var(--paper);
+    }
+
+    /* Right sidebar */
+    .hero-right { display: flex; flex-direction: column; gap: 1.8rem; }
+    .sbar {
+      border-top: 2px solid var(--ink); padding-top: 0.9rem;
+    }
+    .sbar-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8.5px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 0.6rem;
+    }
+    .sbar h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem; font-weight: 700; line-height: 1.3; margin-bottom: 0.4rem;
+    }
+    .sbar p { font-size: 11.5px; line-height: 1.7; color: var(--muted); }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+    .tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 3px 9px; border: 1px solid var(--border); color: var(--muted);
+    }
+    .tag.teal { border-color: var(--teal); color: var(--teal); }
+
+    /* ── SECTION RULE ── */
+    .section-rule {
+      display: flex; align-items: center; gap: 1.2rem;
+      padding: 1.4rem 3.5rem 0;
+      border-top: 3px double var(--ink);
+    }
+    .section-rule h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem; font-weight: 700;
+      letter-spacing: 4px; text-transform: uppercase; white-space: nowrap;
+    }
+    .section-rule::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* ── SKILLS ── */
+    .skills-section { padding: 1.8rem 3.5rem 3.5rem; border-bottom: 2px solid var(--ink); }
+    .skills-columns { display: grid; grid-template-columns: repeat(4, 1fr); }
+    .skill-col {
+      padding: 1.8rem 2rem 1.8rem 0;
+      border-right: 1px solid var(--border);
+    }
+    .skill-col:last-child { border-right: none; padding-right: 0; }
+    .skill-col:not(:first-child) { padding-left: 2rem; }
+    .skill-col-head {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8.5px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 1rem;
+      padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+    }
+    .skill-item {
+      display: flex; align-items: baseline; gap: 8px;
+      font-size: 12.5px; line-height: 2.15;
+    }
+    .skill-item::before {
+      content: '—'; font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px; color: var(--teal); flex-shrink: 0;
+    }
+    .skill-item.dim { color: var(--muted); font-style: italic; }
+    .skill-item.dim::before { content: '○'; color: var(--muted); }
+
+    /* ── PROJECTS ── */
+    .projects-section { padding: 1.8rem 3.5rem 3.5rem; border-bottom: 2px solid var(--ink); }
+    .proj-head {
+      display: grid; grid-template-columns: 2.2fr 1fr 90px;
+      padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-strong);
+    }
+    .proj-head span {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8.5px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted);
+    }
+    .proj-head span:last-child { text-align: right; }
+    .proj-row {
+      display: grid; grid-template-columns: 2.2fr 1fr 90px;
+      padding: 1.4rem 0;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none; color: var(--ink);
+      transition: background 0.15s; cursor: none;
+    }
+    .proj-row:hover { background: var(--blush); }
+    .proj-row:hover .proj-title { color: var(--rose); }
+    .proj-main { padding-right: 2rem; }
+    .proj-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8.5px; color: var(--muted); letter-spacing: 1px; margin-bottom: 3px;
+    }
+    .proj-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem; font-weight: 700; line-height: 1.25; margin-bottom: 5px;
+      transition: color 0.15s;
+    }
+    .proj-desc { font-size: 11.5px; line-height: 1.75; color: var(--muted); }
+    .proj-stack {
+      display: flex; flex-direction: column; justify-content: center; gap: 3px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9.5px; color: var(--muted); letter-spacing: 0.8px;
+      border-left: 1px solid var(--border); padding-left: 1.4rem;
+    }
+    .proj-status {
+      display: flex; align-items: center; justify-content: flex-end;
+      padding-left: 1rem;
+    }
+    .pill {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 4px 10px; border: 1px solid;
+    }
+    .pill-live { border-color: var(--teal); color: var(--teal); }
+    .pill-wip  { border-color: var(--muted); color: var(--muted); font-style: italic; }
+
+    /* ── ABOUT ── clean factsheet, NO repeated intro ── */
+    .about-section { padding: 1.8rem 3.5rem 3.5rem; border-bottom: 2px solid var(--ink); }
+    .about-grid { display: grid; grid-template-columns: 1fr 1px 1.6fr; gap: 0; }
+    .about-divider { background: var(--border); }
+
+    /* Left: photo + fact table */
+    .about-left { padding-right: 3rem; }
+    .about-photo {
+      width: 100%; overflow: hidden; border: 1px solid var(--border); margin-bottom: 0.8rem;
+    }
+    .about-photo img {
+      width: 100%; display: block;
+      filter: sepia(8%) contrast(1.06) brightness(0.98);
+    }
+    .about-photo-cap {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8.5px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase;
+    }
+    .fact-table { margin-top: 1.4rem; }
+    .fact-row {
+      display: flex; align-items: baseline; gap: 10px;
+      font-size: 11.5px; line-height: 2.3;
+      border-bottom: 1px dotted var(--border);
+    }
+    .fact-key {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8.5px; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--muted); min-width: 68px; flex-shrink: 0;
+    }
+
+    /* Right: three clean blocks — NO duplicated intro */
+    .about-right { padding-left: 3rem; }
+    .about-block { margin-bottom: 2rem; border-top: 1px solid var(--border-strong); padding-top: 1rem; }
+    .about-block:first-child { border-top: 2px solid var(--ink); }
+    .about-block-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8.5px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 0.6rem;
+    }
+    .about-block h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem; font-weight: 700; line-height: 1.2;
+      margin-bottom: 0.7rem;
+    }
+    .about-block h3 em { font-style: italic; color: var(--teal); }
+    .about-block p {
+      font-size: 13px; line-height: 1.9; color: #3e302c;
+    }
+    .garden-photo { margin-top: 0.8rem; overflow: hidden; border: 1px solid var(--border); }
+    .garden-photo img {
+      width: 100%; height: 180px; object-fit: cover;
+      filter: sepia(18%) contrast(1.03) saturate(0.88); display: block;
+    }
+
+    /* ── CONTACT ── */
+    .contact-section {
+      padding: 2rem 3.5rem 4.5rem;
+      display: grid; grid-template-columns: 1fr 1.2fr; gap: 4rem; align-items: start;
+    }
+    .contact-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 5vw, 4rem); font-weight: 900;
+      line-height: 0.95; letter-spacing: -2px;
+    }
+    .contact-heading em { font-style: italic; color: var(--teal); }
+    .contact-sub { font-size: 12.5px; color: var(--muted); line-height: 1.85; margin-top: 1.1rem; }
+    .contact-links { display: flex; flex-direction: column; }
+    .clink {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none; color: var(--ink);
+      font-size: 12.5px; transition: all 0.15s; cursor: none;
+    }
+    .clink:first-child { border-top: 1px solid var(--border); }
+    .clink:hover { color: var(--teal); padding-left: 5px; }
+    .clink-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8.5px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--muted); width: 72px; flex-shrink: 0;
+    }
+    .clink-val { flex: 1; padding: 0 1rem; }
+    .clink-arr { font-size: 15px; color: var(--muted); transition: transform 0.15s; }
+    .clink:hover .clink-arr { transform: translate(3px, -3px); color: var(--teal); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 3px double var(--ink);
+      padding: 1.1rem 3.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem; font-weight: 900; letter-spacing: -0.5px;
+    }
+    .footer-mono {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9.5px; letter-spacing: 1px; color: var(--muted);
+    }
+
+    /* ── REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 860px) {
+      .masthead, nav, .section-rule,
+      .skills-section, .projects-section,
+      .about-section, .contact-section { padding-left: 1.4rem; padding-right: 1.4rem; }
+      .hero { grid-template-columns: 1fr; min-height: auto; }
+      .col-divider { display: none; }
+      .hero-col { padding: 2rem 1.4rem; border-bottom: 1px solid var(--border); }
+      .hero-right { display: none; }
+      .skills-columns { grid-template-columns: 1fr 1fr; }
+      .skill-col { border-right: none; border-bottom: 1px solid var(--border); padding: 1rem 0; }
+      .skill-col:not(:first-child) { padding-left: 0; }
+      .proj-head, .proj-row { grid-template-columns: 1fr; }
+      .proj-head span:not(:first-child), .proj-stack, .proj-status { display: none; }
+      .about-grid { grid-template-columns: 1fr; }
+      .about-divider { display: none; }
+      .about-left { padding-right: 0; }
+      .about-right { padding-left: 0; padding-top: 2rem; }
+      .contact-section { grid-template-columns: 1fr; gap: 2rem; }
+      footer { flex-direction: column; gap: 0.4rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="masthead-side">Dhaka, Bangladesh · 2025</div>
+  <div class="masthead-center">The Samia Rahman Portfolio</div>
+  <div class="masthead-side right">ML &amp; AI — BRAC University</div>
+</header>
+
+<!-- NAV -->
+<nav>
+  <a href="#projects">Projects</a>
+  <a href="#skills">Skills</a>
+  <a href="#about">About</a>
+  <a href="https://github.com/chaityrahman154-lgtm" target="_blank">GitHub ↗</a>
+  <a href="#contact">Contact</a>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+
+  <!-- LEFT -->
+  <div class="hero-col hero-left">
+    <div class="hero-vol">Vol. I — Machine Learning & AI</div>
+    <div class="hero-name">Sa&shy;mia<br><em>Rah&shy;man</em></div>
+    <div class="hero-meta">
+      BRAC UNIVERSITY · BSc CSE<br>
+      DHAKA, BANGLADESH<br>
+      samia.rahman9@g.bracu.ac.bd
+    </div>
+  </div>
+
+  <div class="col-divider"></div>
+
+  <!-- CENTER — intro lives here and only here -->
+  <div class="hero-col hero-center">
+    <div class="hero-headline">
+      A student who teaches<br><em>machines to think.</em>
+    </div>
+    <div class="hero-intro">
+      <p>I'm a Computer Science & Engineering student at BRAC University, Dhaka, with a deep focus on Machine Learning and Artificial Intelligence. I believe that data, properly understood, reveals extraordinary truths about the world.</p>
+      <p>From training classifiers to visualising learning curves, I approach every project with scientific rigour and creative curiosity. I participated in the NASA Space Apps Challenge — writing code and editing the team's submission video.</p>
+      <p>Currently building expertise in deep learning architectures. Next up: a plant disease classifier trained on leaf images, because even a gardener can teach a neural network to see.</p>
+    </div>
+
+    <!-- Visual fill block -->
+    <div class="hero-fill">
+      <div class="hero-fill-quote">
+        <span class="fill-mark">"</span>
+        Data reveals extraordinary truths — if you know how to ask.
+      </div>
+      <div class="hero-fill-stats">
+        <div class="fill-stat">
+          <span class="fill-stat-num">3</span>
+          <span class="fill-stat-label">Live Projects</span>
+        </div>
+        <div class="fill-stat-div"></div>
+        <div class="fill-stat">
+          <span class="fill-stat-num">NASA</span>
+          <span class="fill-stat-label">Space Apps Challenge</span>
+        </div>
+        <div class="fill-stat-div"></div>
+        <div class="fill-stat">
+          <span class="fill-stat-num">ML</span>
+          <span class="fill-stat-label">Deep Learning Focus</span>
+        </div>
+      </div>
+      <div class="hero-fill-tags">
+        <span class="ftag">Machine Learning</span>
+        <span class="ftag">Neural Networks</span>
+        <span class="ftag">Python</span>
+        <span class="ftag">TensorFlow</span>
+        <span class="ftag">NLP</span>
+        <span class="ftag">Computer Vision</span>
+        <span class="ftag">Data Science</span>
+        <span class="ftag">Keras</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="col-divider"></div>
+
+  <!-- RIGHT SIDEBAR -->
+  <div class="hero-col hero-right">
+    <div class="sbar">
+      <div class="sbar-label">Currently learning</div>
+      <h3>Deep Learning & Neural Networks</h3>
+      <p>Backpropagation, activation functions, CNNs, and model deployment.</p>
+      <div class="tag-row">
+        <span class="tag teal">TensorFlow</span>
+        <span class="tag teal">CNN</span>
+        <span class="tag teal">Keras</span>
+      </div>
+    </div>
+    <div class="sbar">
+      <div class="sbar-label">Hackathon</div>
+      <h3>NASA Space Apps Challenge</h3>
+      <p>Team member — contributed code and produced the final video submission.</p>
+    </div>
+    <div class="sbar">
+      <div class="sbar-label">Goal</div>
+      <h3>ML Engineer / AI Researcher</h3>
+      <div class="tag-row">
+        <span class="tag">Open to internships</span>
+        <span class="tag">Research</span>
+      </div>
+    </div>
+    <div class="sbar">
+      <div class="sbar-label">Beyond code</div>
+      <h3>Balcony Flower Garden</h3>
+      <p>Tending plants in Dhaka — patience and iteration, like training a model.</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══ SKILLS ═══ -->
+<div class="section-rule reveal" id="skills"><h2>Skills & Stack</h2></div>
+<section class="skills-section">
+  <div class="skills-columns">
+    <div class="skill-col reveal">
+      <div class="skill-col-head">Machine Learning</div>
+      <div class="skill-item">Python</div>
+      <div class="skill-item">Scikit-learn</div>
+      <div class="skill-item">Pandas</div>
+      <div class="skill-item">NumPy</div>
+      <div class="skill-item">Matplotlib</div>
+      <div class="skill-item">Jupyter Notebook</div>
+      <div class="skill-item">Google Colab</div>
+    </div>
+    <div class="skill-col reveal">
+      <div class="skill-col-head">Deep Learning — Learning</div>
+      <div class="skill-item dim">TensorFlow</div>
+      <div class="skill-item dim">Keras</div>
+      <div class="skill-item dim">OpenCV</div>
+      <div class="skill-item dim">NLP / BERT</div>
+      <div class="skill-item dim">Flask</div>
+      <div class="skill-item dim">Streamlit</div>
+    </div>
+    <div class="skill-col reveal">
+      <div class="skill-col-head">Data & Databases</div>
+      <div class="skill-item">SQL</div>
+      <div class="skill-item">Relational Design</div>
+      <div class="skill-item">Normalisation</div>
+      <div class="skill-item">PHP</div>
+      <div class="skill-item">Data Wrangling</div>
+      <div class="skill-item">EDA</div>
+    </div>
+    <div class="skill-col reveal">
+      <div class="skill-col-head">Tools & Web</div>
+      <div class="skill-item">Git & GitHub</div>
+      <div class="skill-item">HTML5 & CSS3</div>
+      <div class="skill-item">Linux</div>
+      <div class="skill-item">Video Editing</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROJECTS ═══ -->
+<div class="section-rule reveal" id="projects"><h2>Projects</h2></div>
+<section class="projects-section">
+  <div class="proj-head">
+    <span>Project</span><span>Stack</span><span style="text-align:right">Status</span>
+  </div>
+
+  <a href="https://github.com/chaityrahman154-lgtm/ai-model-evaluation" target="_blank" class="proj-row reveal">
+    <div class="proj-main">
+      <div class="proj-num">01</div>
+      <div class="proj-title">AI Model Evaluation Suite</div>
+      <div class="proj-desc">Comparative analysis of ML models — accuracy, precision, recall and F1 with rich visualisations.</div>
+    </div>
+    <div class="proj-stack"><span>Python</span><span>Scikit-learn</span><span>Matplotlib</span></div>
+    <div class="proj-status"><span class="pill pill-live">Live ↗</span></div>
+  </a>
+
+  <a href="https://github.com/chaityrahman154-lgtm/sql-project-showcase" target="_blank" class="proj-row reveal">
+    <div class="proj-main">
+      <div class="proj-num">02</div>
+      <div class="proj-title">SQL Project Showcase</div>
+      <div class="proj-desc">Full database management system — relational schema, normalisation, complex queries and PHP backend.</div>
+    </div>
+    <div class="proj-stack"><span>SQL</span><span>PHP</span><span>DB Design</span></div>
+    <div class="proj-status"><span class="pill pill-live">Live ↗</span></div>
+  </a>
+
+  <a href="https://github.com/chaityrahman154-lgtm/The-beginning-is-today" target="_blank" class="proj-row reveal">
+    <div class="proj-main">
+      <div class="proj-num">03</div>
+      <div class="proj-title">The Beginning Is Today</div>
+      <div class="proj-desc">Colab notebooks documenting my ML journey — linear regression through to neural networks.</div>
+    </div>
+    <div class="proj-stack"><span>Jupyter</span><span>Python</span><span>Colab</span></div>
+    <div class="proj-status"><span class="pill pill-live">Live ↗</span></div>
+  </a>
+
+  <a href="https://github.com/chaityrahman154-lgtm/animated-worlds" target="_blank" class="proj-row reveal">
+    <div class="proj-main">
+      <div class="proj-num">04</div>
+      <div class="proj-title">Animated Worlds</div>
+      <div class="proj-desc">Graphics and animation built in Python — rendering and motion from first principles.</div>
+    </div>
+    <div class="proj-stack"><span>Python</span><span>Graphics</span></div>
+    <div class="proj-status"><span class="pill pill-live">Live ↗</span></div>
+  </a>
+
+  <a href="https://github.com/chaityrahman154-lgtm/CSS-Animations" target="_blank" class="proj-row reveal">
+    <div class="proj-main">
+      <div class="proj-num">05</div>
+      <div class="proj-title">CSS Animation Gallery</div>
+      <div class="proj-desc">Creative CSS animations, transitions and interactive UI effects.</div>
+    </div>
+    <div class="proj-stack"><span>HTML</span><span>CSS</span></div>
+    <div class="proj-status"><span class="pill pill-live">Live ↗</span></div>
+  </a>
+
+  <div class="proj-row reveal" style="cursor:default; pointer-events:none;">
+    <div class="proj-main">
+      <div class="proj-num">06</div>
+      <div class="proj-title">Plant Disease Classifier</div>
+      <div class="proj-desc">CNN detecting leaf disease from photos — inspired by my balcony garden. Deployed via Streamlit.</div>
+    </div>
+    <div class="proj-stack"><span>TensorFlow</span><span>OpenCV</span><span>Streamlit</span></div>
+    <div class="proj-status"><span class="pill pill-wip">In progress</span></div>
+  </div>
+</section>
+
+<!-- ═══ ABOUT — factsheet only, no repeated intro ═══ -->
+<div class="section-rule reveal" id="about"><h2>About</h2></div>
+<section class="about-section">
+  <div class="about-grid">
+
+    <!-- Left: photo + facts -->
+    <div class="about-left reveal">
+      <div class="about-photo">
+        <img src="image.jpeg" alt="Samia Rahman">
+      </div>
+      <div class="about-photo-cap">Samia Rahman — Dhaka, Bangladesh</div>
+      <div class="fact-table">
+        <div class="fact-row"><span class="fact-key">University</span><span>BRAC University, Dhaka</span></div>
+        <div class="fact-row"><span class="fact-key">Degree</span><span>BSc Computer Science & Engineering</span></div>
+        <div class="fact-row"><span class="fact-key">Focus</span><span>Machine Learning · AI · Deep Learning</span></div>
+        <div class="fact-row"><span class="fact-key">Hackathon</span><span>NASA Space Apps Challenge</span></div>
+        <div class="fact-row"><span class="fact-key">Goal</span><span>ML Engineer / AI Researcher</span></div>
+        <div class="fact-row"><span class="fact-key">Location</span><span>Dhaka, Bangladesh</span></div>
+        <div class="fact-row"><span class="fact-key">Status</span><span>Open to internships & research</span></div>
+      </div>
+    </div>
+
+    <div class="about-divider"></div>
+
+    <!-- Right: three distinct blocks -->
+    <div class="about-right reveal">
+
+      <div class="about-block">
+        <div class="about-block-label">The work</div>
+        <h3>Building models that <em>learn.</em></h3>
+        <p>I'm currently deep in deep learning — studying how neural networks actually work, from backpropagation through to convolutional architectures. I want to understand the mechanics, not just use the libraries. My AI Model Evaluation Suite and learning notebooks are where this shows up most clearly.</p>
+      </div>
+
+      <div class="about-block">
+        <div class="about-block-label">The challenge</div>
+        <h3>NASA Space Apps, 2024</h3>
+        <p>I participated in the NASA Space Apps Challenge as part of a team — contributing both code and the final video submission. It was high-pressure, cross-disciplinary, and taught me that communicating your work matters as much as doing it.</p>
+      </div>
+
+      <div class="about-block">
+        <div class="about-block-label">Beyond the screen</div>
+        <h3>Balcony garden, Dhaka</h3>
+        <p>I grow flowers on my balcony. Slowly, patiently. Gardening and model training share more than you'd think — careful observation, small adjustments, and the willingness to wait for results.</p>
+        <div class="garden-photo">
+          <img src="balcony.jpeg" alt="Balcony garden">
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CONTACT ═══ -->
+<div class="section-rule reveal" id="contact"><h2>Get in Touch</h2></div>
+<section class="contact-section">
+  <div class="reveal">
+    <div class="contact-heading">Let's<br>build<br><em>together.</em></div>
+    <p class="contact-sub">Open to internships, research collaborations, and ML/AI project partnerships. Based in Dhaka, available remotely.</p>
+  </div>
+  <div class="contact-links reveal">
+    <a href="mailto:samia.rahman9@g.bracu.ac.bd" class="clink">
+      <span class="clink-label">University</span>
+      <span class="clink-val">samia.rahman9@g.bracu.ac.bd</span>
+      <span class="clink-arr">↗</span>
+    </a>
+    <a href="mailto:chaityrahman154@gmail.com" class="clink">
+      <span class="clink-label">Personal</span>
+      <span class="clink-val">chaityrahman154@gmail.com</span>
+      <span class="clink-arr">↗</span>
+    </a>
+    <a href="https://github.com/chaityrahman154-lgtm" target="_blank" class="clink">
+      <span class="clink-label">GitHub</span>
+      <span class="clink-val">chaityrahman154-lgtm</span>
+      <span class="clink-arr">↗</span>
+    </a>
+    <a href="https://www.linkedin.com/in/samia-rahman-b98aa0386/" target="_blank" class="clink">
+      <span class="clink-label">LinkedIn</span>
+      <span class="clink-val">samia-rahman-b98aa0386</span>
+      <span class="clink-arr">↗</span>
+    </a>
+    <a href="https://chaityrahman154-lgtm.github.io/Portfolio-Samia_Rahman/" target="_blank" class="clink">
+      <span class="clink-label">Portfolio</span>
+      <span class="clink-val">chaityrahman154-lgtm.github.io</span>
+      <span class="clink-arr">↗</span>
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-brand">Samia Rahman</div>
+  <div class="footer-mono">© 2025 · Dhaka, Bangladesh</div>
+  <div class="footer-mono">ML & AI · BRAC University</div>
+</footer>
+
+<script>
+  // Cursor
+  const cur = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => {
+    cur.style.left = (e.clientX - 4.5) + 'px';
+    cur.style.top  = (e.clientY - 4.5) + 'px';
+  });
+  document.querySelectorAll('a, nav a').forEach(el => {
+    el.addEventListener('mouseenter', () => cur.classList.add('hover'));
+    el.addEventListener('mouseleave', () => cur.classList.remove('hover'));
+  });
+
+  // Scroll reveal
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.07 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
